@@ -1,0 +1,19 @@
+version: "2.15"
+
+services:
+  app:
+    image: emp-service
+    container_name: emp-service
+    ports:
+      - 8080:8080
+
+  ss-mysql:
+    image: mysql:5.7
+    container_name: ss-mysql
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+    ports:
+      - 3306:3306
+    environment: 
+      MYSQL_ROOT_PASSWORD: Nikhil@2305
+      MYSQL_DATABASE: emplyeedb
