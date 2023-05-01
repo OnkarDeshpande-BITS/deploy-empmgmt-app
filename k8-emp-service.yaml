@@ -103,3 +103,71 @@ spec:
     - name: "http"
       port: 8080
       targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-service
+  labels:
+    app: project-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-service
+  template:
+    metadata:
+      labels:
+        app: project-service
+    spec:
+      containers:
+      - name: project-service
+        image: odbits/project-service
+        ports:
+        - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-service-k8-cluster
+spec:
+  selector:
+    app: project-service
+  ports:
+    - name: "http"
+      port: 8082
+      targetPort: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: address-service
+  labels:
+    app: address-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: address-service
+  template:
+    metadata:
+      labels:
+        app: address-service
+    spec:
+      containers:
+      - name: address-service
+        image: odbits/address-service
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: address-service-k8-cluster
+spec:
+  selector:
+    app: address-service
+  ports:
+    - name: "http"
+      port: 8081
+      targetPort: 8081
