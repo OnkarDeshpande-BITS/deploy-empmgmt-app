@@ -1,0 +1,139 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - image: odartstore.azurecr.io/mysql
+        name: mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: Nikhil@2305
+        - name: MYSQL_DATABASE
+          value: emplyeedb
+        ports:
+        - containerPort: 3306
+          name: sql-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ss-mysql
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: mysql
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: emp-service
+  labels:
+    app: emp-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: emp-service
+  template:
+    metadata:
+      labels:
+        app: emp-service
+    spec:
+      containers:
+      - name: emp-service
+        image: odartstore.azurecr.io/emp-service:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: emp-service-lb
+spec:
+  type: LoadBalancer
+  selector:
+    app: emp-service
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-service
+  labels:
+    app: project-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project-service
+  template:
+    metadata:
+      labels:
+        app: project-service
+    spec:
+      containers:
+      - name: project-service
+        image: odartstore.azurecr.io/project-service
+        ports:
+        - containerPort: 8082
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-service
+spec:
+  selector:
+    app: project-service
+  ports:
+    - name: "http"
+      port: 8082
+      targetPort: 8082
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: address-service
+  labels:
+    app: address-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: address-service
+  template:
+    metadata:
+      labels:
+        app: address-service
+    spec:
+      containers:
+      - name: address-service
+        image: odartstore.azurecr.io/address-service
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: address-service
+spec:
+  selector:
+    app: address-service
+  ports:
+    - name: "http"
+      port: 8081
+      targetPort: 8081
